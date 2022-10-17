@@ -1,6 +1,7 @@
 import dash
-from dash import html
 import dash_bootstrap_components as dbc
+from dash import html
+
 app = dash.Dash(__name__, use_pages=True)
 
 # Declare server for Heroku deployment. Needed for Procfile.
@@ -27,16 +28,15 @@ app.layout = dbc.Container([
         ])
     ]),
     html.Hr(),
-
     dbc.Row([
         dbc.Col([
             sidebar
-        ], xs=4, sm=4, lg=2, xl=2, xxl=2
+        ], md=3
         ),
 
         dbc.Col([
             dash.page_container
-        ], xs=8, sm=8, lg=10, xl=10, xxl=10
+        ], md=9
         )
 
     ])

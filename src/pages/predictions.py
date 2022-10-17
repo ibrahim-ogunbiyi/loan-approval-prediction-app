@@ -1,10 +1,9 @@
-from dash import dcc, html, Input, Output, State
-from dash import callback
+import pickle
+
+import dash
 import dash_bootstrap_components as dbc
 import numpy as np
-import pickle
-import dash
-
+from dash import Input, Output, State, callback, dcc, html
 
 dash.register_page(__name__, path="/", name="Prediction")  # homepage
 
@@ -12,85 +11,93 @@ layout = html.Div([
     html.Div([
         html.P("Please input the values for the following features and click on the predict button to know if you are eligible for the loan."),
         html.Br(),
-        dbc.Row([
-            dbc.Col([
-                html.P("Married"),
-                dbc.RadioItems(id="married_id", options=[
-                               {'label': i, 'value': i} for i in ["No", "Yes"]]),
-
-            ],
-                xs=2, sm=2, lg=2, xl=2, xxl=2
-            ),
-            dbc.Col([
-                html.P("Dependents"),
+        # 1
+        html.Div([
+            html.Div([
+                html.Label('Married', htmlFor="married_id", className="d-block my-2"),
+                dcc.Dropdown(id="married_id", options=[
+                             "No", "Yes"], value=None),
+            ], className="col col-md-3"),
+            html.Div([
+                html.Label('Dependents', htmlFor="dependents_id", className="d-block my-2"),
+                
                 dcc.Dropdown(id="dependents_id", options=[
                              "0", "1", "2", "3+"], value="1"),
-            ],
-                xs=6, sm=6, lg=8, xl=8, xxl=8
-            )]),
-        dbc.Row([
-            dbc.Col([
-                html.P("Gender"),
-                dbc.RadioItems(id="gender_id", options=[
-                               {'label': i, 'value': i} for i in ["Female", "Male"]]),
-            ],
-                xs=2, sm=2, lg=2, xl=2, xxl=2
-            ),
-            dbc.Col([
-                html.P("Property Area"),
+            ], className="col col-md-5"),
+        ],className="row py-3"),
+
+        # 2
+        html.Div([
+            html.Div([
+                html.Label('Gender', htmlFor="gender_id", className="d-block my-2"),
+                dcc.Dropdown(id="gender_id", options=[
+                             "Female", "Male"], value=None),
+            ], className="col col-md-3"),
+            html.Div([
+                html.Label('Property Area', htmlFor="property_id", className="d-block my-2"),
                 dcc.Dropdown(id="property_id", options=[
                              "Rural", "Semi-Urban", "Urban"], value="Rural"),
-            ],
-                xs=6, sm=6, lg=8, xl=8, xxl=8
-            )
-        ]),
-        dbc.Row([
-            dbc.Col([
-                html.P("Credit History"),
-                dbc.RadioItems(id="credit_id", options=[
-                               {'label': i, 'value': i} for i in ["No", "Yes"]])
-            ],
-                width=2
-            ),
-            dbc.Col([
-                html.P("Applicant Income"),
+            ], className="col col-md-5"),
+        ],className="row py-3"),
+
+        # 3
+        html.Div([
+            html.Div([
+                html.Label('Credit History', htmlFor="credit_id", className="d-block my-2"),
+                dcc.Dropdown(id="credit_id", options=["No", "Yes"], value=None),
+            ], className="col col-md-3"),
+            html.Div([
+                html.Label('Applicant Income', htmlFor="applicant_id", className="d-block my-2"),
                 dbc.Input(id="applicant_id", type="number", min=100,
-                          max=1e6, placeholder="Enter your Income"),
-            ],
-                xs=6, sm=6, lg=8, xl=8, xxl=8
-            )
-        ]),
-        dbc.Row([
-            dbc.Col([
-                html.P("Education"),
-                dbc.RadioItems(id="education_id", options=[
-                               {'label': i, 'value': i} for i in ["Not-Graduate", "Graduate"]]),
-                html.P("Self Employed"),
-                dbc.RadioItems(id="self_employed_id", options=[
-                               {'label': i, 'value': i} for i in ["No", "Yes"]]),
-            ],
-                width=2
-            ),
-            dbc.Col([
-                html.P("Co-Applicant Income"),
+                          max=1e6, placeholder="Enter your Income", className="form-control"),
+            ], className="col col-md-5"),
+        ],className="row py-3"),
+
+        # 4
+        html.Div([
+            html.Div([
+                html.Label('Education', htmlFor="education_id", className="d-block my-2"),
+                dcc.Dropdown(id="education_id", options=["Not-Graduate", "Graduate"], value=None),
+
+            ], className="col col-md-3"),
+            html.Div([
+                html.Label('Co-Applicant Income', htmlFor="co_applicant_id", className="d-block my-2"),
                 dbc.Input(id="co_applicant_id", type="number", min=100,
-                          max=1e6, placeholder="Enter your Income"),
-                html.P("Loan Amount Term"),
-                dbc.Input(id="loan_term_id", type="number", min=12, max=480,
-                          placeholder="Enter the Loan Amount Term(Number)"),
-                html.P("Loan Amount"),
+                          max=1e6, placeholder="Enter your Income", className="form-control"),
+            ], className="col col-md-5"),
+        ],className="row py-3"),
+
+        # 5
+        html.Div([
+            html.Div([
+                html.Label('Self Employed', htmlFor="self_employed_id", className="d-block my-2"),
+                dcc.Dropdown(id="self_employed_id", options=["No", "Yes"], value=None),
+
+            ], className="col col-md-3"),
+            html.Div([
+                html.Label('Loan Amount Term', htmlFor="loan_term_id", className="d-block my-2"),
+                dbc.Input(id="loan_term_id", type="number", min=12,
+                          max=480, placeholder="Enter the Loan Amount Term (Number)", className="form-control"),
+            ], className="col col-md-5"),
+        ],className="row py-3"),
+        
+        # 6
+        html.Div([
+            html.Div([
+                html.Label('Loan Amount ', htmlFor="loan_amount_id", className="d-block my-2"),
                 dbc.Input(id="loan_amount_id", type="number", min=10,
-                          max=1e3, placeholder="Enter the Loan Amount")
-
-            ],
-
-                xs=6, sm=6, lg=8, xl=8, xxl=8
-            )
-        ])]),
+                          max=1e3, placeholder="Enter the Loan Amount", className="form-control"),
+            ], className="col-md-8"),
+        ],className="row py-3"),
+                ]),
+   
     html.Hr(),
-    html.Div([
-        dbc.Button("Predict", id="start-experiment-button", className = "btn btn-outline-secondary", n_clicks=0),
-        html.Div(id="result-display")]
+    html.Div(
+        [
+        dbc.Button("Start Predict", id="start-experiment-button", className="btn btn-secondary w-55", n_clicks=0),
+        html.Br(),
+        html.Br(),
+        html.Div(id="result-display", className="col-md-8")], className="py-3"
     )
 ])
 
@@ -139,14 +146,13 @@ def predict_loan(n_clicks, dependents, education, applicant, co_applicant,
             features.append(2)
         features.extend([applicant, co_applicant, loan_amount])
         print(features)
-
-        with open("model.pkl", "rb") as f:
+        
+        with open("src\pages\model.pkl", "rb") as f:
             model = pickle.load(f)
         preds = model.named_steps["model"].predict([features])
         if preds == 0:
-            note = "You are not Eligible for a Loan"
+            note = "Sorry😢! You are not Eligible for a Loan at this Time❌."
+            return html.Div(note, className="alert alert-danger")
         else:
-            note = "Congratulations You are Eligible for a Loan"
-        html.Br(),
-        html.Br()
-        return html.Div(note)
+            note = "Congratulations🎉 You are Eligible for a Loan😎💸💷."
+            return html.Div(note,  className="alert alert-success")
